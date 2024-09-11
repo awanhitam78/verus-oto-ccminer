@@ -357,4 +357,3 @@ else
     echo "Unknown architecture: $arch"
     exit 2
 fi
-done
