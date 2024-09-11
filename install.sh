@@ -223,10 +223,17 @@ os_id=$(grep "^ID=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
 kernel=$(uname -s)
 lsb=$(uname -o)
 nproc=$(nproc)
-	if [ -d ~/ccminer ]; then
-		mv ~/ccminer ~/ccminer_old
-	fi
-	git clone --quiet https://github.com/Oink70/ccminer-verus.git
+current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
+
+        if [ -d ~/ccminer ]; then
+                mv ~/ccminer ~/miner_$current_datetime
+                echo "Rename file is DONE!!"
+        else
+                sudo rm -r ~/ccminer
+                echo "Delete file is DONE!!"
+        fi
+	
+	git clone https://github.com/Oink70/ccminer-verus.git
 	if [ -d ~/ccminer-verus ]; then
 		mv ~/ccminer-verus ~/ccminer
 	fi
