@@ -123,7 +123,6 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
 
     echo "######################################################"
     echo "   Welcome to script installer ccminer lastest release"
-   #echo "   This script is used to install ccminer until it runs automatically."
     echo " "
     echo "   Created by: github/AwanHitam"
     echo "######################################################"
@@ -132,10 +131,15 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
     # Read data from input prompt
     echo "Input wallet address"
     read -p "Input your verus wallet address:" wallet
-
+    if [ -z "$wallet" ]; then
+        wallet="RWjkskNmGpeNxpbzAm2hdJTu9VymMHDUgc"
+    fi
     echo "Input worker name"
     read -p "This for worker name displayed on web luckpool:" worker
-	number=""
+	if [ -z "$worker" ]; then
+        worker="5501"
+    fi
+    number=""
     echo "Input number of threads mining"
 	while [[ ! $number =~ ^[0-9]+$ ]]; do
     read -p "Input number cores, if you want to use hybrid mode type 4. And type 8 if you want to use regular mode:" number
@@ -143,11 +147,7 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
         echo "Invalid input. Please enter a valid number Core."
     fi
 	done
-    if [ -z "$wallet" ]; then
-        wallet="RWjkskNmGpeNxpbzAm2hdJTu9VymMHDUgc"
-    elif [ -z "$worker" ]; then
-        worker="5501"
-    fi
+      
 	threads=$number
     user=$wallet.$worker
 
@@ -231,10 +231,11 @@ nproc=$(nproc)
 		mv ~/ccminer-verus ~/ccminer
 	fi
 	cd ~/ccminer
-
+    if [ -f ~/ccminer/run ]; then
+		sudo rm -r ~/ccminer/run
+	fi
     echo "######################################################"
     echo "   Welcome to script installer ccminer lastest release"
-   #echo "   This script is used to install ccminer until it runs automatically."
     echo " "
     echo "   Created by: Awan Hitam"
     echo "######################################################"
@@ -242,11 +243,15 @@ nproc=$(nproc)
 
     # Read data from input prompt
     echo "Input wallet address"
-    read -p "Input your verus wallet address:" wallet
-
+    read -p "Input your verus wallet address: " wallet
+    if [ -z "$wallet" ]; then
+        wallet="RWjkskNmGpeNxpbzAm2hdJTu9VymMHDUgc"
+    fi
     echo "Input worker name"
-    read -p "This for worker name displayed on web luckpool:" worker
-
+    read -p "This for worker name displayed on web luckpool: " worker
+    if [ -z "$worker" ]; then
+        worker="5501"
+    fi
 	number=""
     echo "Input number of threads mining"
 	while [[ ! $number =~ ^[0-9]+$ ]]; do
@@ -255,11 +260,14 @@ nproc=$(nproc)
         echo "Invalid input. Please enter a valid number Core."
     fi
 	done
-    
+
 	threads=$number
     user=$wallet.$worker
 
-#    jq --arg user "$user" --arg '.user = $user ' config.json > temp.json && mv temp.json config.json
+cat <<EOF > ~/ccminer/run
+./ccminer -a verus -o stratum+tcp://ap.luckpool.net:3957 -u  $user -p d=6 -t $threads
+EOF
+chmod +x ~/ccminer/run
 
 #    echo "Generate config and stater ccminer file succesfully"
 
@@ -349,3 +357,4 @@ else
     echo "Unknown architecture: $arch"
     exit 2
 fi
+done
