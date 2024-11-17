@@ -247,8 +247,12 @@ current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
 	git clone https://github.com/Oink70/ccminer-verus.git
 	if [ -d ~/ccminer-verus ]; then
 		mv ~/ccminer-verus ~/ccminer
+  		cd ~/ccminer
+        	wget https://github.com/Oink70/ccminer-verus/releases/download/v3.8.3a-CPU/ccminer-v3.8.3a-oink_Ubuntu_18.04
+		mv ~/ccminer/ccminer-v3.8.3a-oink_Ubuntu_18.04 ~/ccminer/ccminer
+        	sudo chmod +x ~/ccminer/ccminer
 	fi
-	cd ~/ccminer
+	
     if [ -f ~/ccminer/run ]; then
 		sudo rm -r ~/ccminer/run
 	fi
@@ -294,16 +298,16 @@ cat <<EOF > ~/ccminer/config.json
 {
   "pools": [
     {
-      "name": "LUCKPOOL",
-      "url": "stratum+tcp://na.luckpool.net:3957",
+      "name": "LUCKPOOL 1",
+      "url": "stratum+tcp://ap.luckpool.net:3956",
       "timeout": 180,
       "disabled": 0
     },
     {
-      "name": "VIPOR",
-      "url": "stratum+tcp://au.vipor.net:5040",
+      "name": "LUCKPOOL 2",
+      "url": "stratum+tcp://na.luckpool.net:3956",
       "timeout": 160,
-      "disabled": 1
+      "disabled": 0
     }
   ],
   "user": "$user",
@@ -311,29 +315,57 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "retry-pause": 10,
-  "api-allow": "192.168.0.0/16",
-  "api-bind": "0.0.0.0:4068"
+  "retry-pause": 10
 }
 EOF
 #auto create stater  ccminer
 cat <<EOF > ~/ccminer/start.sh
-~/ccminer/ccminer -c ~/ccminer/config.json
+#!/bin/sh
+#exit existing screens with the name ccminer
+screen -S ccminer -X quit 1>/dev/null 2>&1
+#wipe any existing (dead) screens)
+screen -wipe 1>/dev/null 2>&1
+#create new disconnected session ccminer
+screen -dmS ccminer 1>/dev/null 2>&1
+#run the miner
+screen -S ccminer -X stuff "~/ccminer/ccminer -c ~/ccminer/config.json\n" 1>/dev/null 2>&1
+printf '\nMining started.\n'
+printf '===============\n'
+printf '\nManual:\n'
+printf 'start: ~/piccminer/start.sh\n'
+printf 'stop: screen -X -S ccminer quit\n'
+printf '\nmonitor mining: screen -x ccminer\n'
+printf "exit monitor: 'CTRL-a' followed by 'd'\n\n"
 EOF
 
     echo "Generate config and stater ccminer file succesfully"
     chmod +x start.sh
+    
+	#crontab the miner
+	export VISUAL=nano
+	export EDITOR=nano
+	
+	CRON_JOB="@reboot sleep 10 && ~/piccminer/start.sh"
+	CRON_USER="orangepi"
+	
+	if crontab -u $CRON_USER -l 2>/dev/null | grep -q "$CRON_JOB"
+	then
+	    echo "CCMiner is already in the boot list..."
+	else
+	    (crontab -u $CRON_USER -l 2>/dev/null; echo "$CRON_JOB") | crontab -u $CRON_USER -
+	    echo "CCMiner added to boot list!!!"
+	fi
 
     if [ "$os_id" = "ubuntu" ] || [ "$os_id" = "debian" ]; then
 	echo "Operating System: $kernel ID: $os_id - $lsb"
 
-	rm -f Makefile.in
-	rm -f config.status
+	#rm -f Makefile.in
+	#rm -f config.status
 
-	./autogen.sh || echo done
-	./configure.sh
+	#./autogen.sh || echo done
+	#./configure.sh
 
-	make -j "$nproc"
+	#make -j "$nproc"
 	echo "Finish Auto-Install https://github.com/Oink70 CCMiner for Verus-2.2 in $os_id with CPU Core" $(nproc) done
 	echo " "
 	echo " "
