@@ -189,9 +189,7 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "retry-pause": 10,
-  "api-allow": "192.168.0.0/16",
-  "api-bind": "0.0.0.0:4068"
+  "retry-pause": 10
 }
 EOF
 
@@ -345,7 +343,7 @@ EOF
 	export VISUAL=nano
 	export EDITOR=nano
 	
-	CRON_JOB="@reboot sleep 10 && ~/piccminer/start.sh"
+	CRON_JOB="@reboot sleep 10 && ~/ccminer/start.sh"
 	CRON_USER="orangepi"
 	
 	if crontab -u $CRON_USER -l 2>/dev/null | grep -q "$CRON_JOB"
