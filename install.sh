@@ -17,8 +17,7 @@ oarch=$(uname -o)
 if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
 	if [ "$oarch" = "Android" ]; then
 		pkg update -y && pkg upgrade -y
-		pkg install -y libjansson nano jq
-		pkg install -y git nano libcurl-dev openssl-dev libjansson-dev automake autotools-dev build-essential
+		pkg install -y libjansson libcurl openssl zlib build-essential cmake nano wget jq screen
 		termux-wake-lock
 	elif [ ! command -v sudo &> /dev/null ]; then
 		apt-get update -y && apt-get upgrade -y
@@ -92,7 +91,9 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
   		mkdir ~/ccminer
 	fi
 	cd ~/ccminer
-	
+if [ "$oarch" = "Android" ]; then
+ 	wget https://raw.githubusercontent.com/Darktron/pre-compiled/generic/ccminer -P ~/ccminer
+else  
 	GITHUB_RELEASE_JSON=$(curl --silent "https://api.github.com/repos/Oink70/CCminer-ARM-optimized/releases?per_page=1" | jq -c '[.[] | del (.body)]')
 	GITHUB_DOWNLOAD_URL=$(echo $GITHUB_RELEASE_JSON | jq -r ".[0].assets[0].browser_download_url")
 	GITHUB_DOWNLOAD_NAME=$(echo $GITHUB_RELEASE_JSON | jq -r ".[0].assets[0].name")
@@ -100,7 +101,7 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
 	echo "Downloading latest release: $GITHUB_DOWNLOAD_NAME"
 
 	wget ${GITHUB_DOWNLOAD_URL} -P ~/ccminer
-
+fi
 	if [ -f ~/ccminer/config.json ]; then
   		INPUT=
   		COUNTER=0
@@ -175,13 +176,13 @@ cat <<EOF > ~/ccminer/config.json
       "name": "LUCKPOOL",
       "url": "stratum+tcp://na.luckpool.net:3957",
       "timeout": 180,
-      "disabled": 0
+      "disabled": 1
     },
     {
       "name": "VIPOR",
       "url": "stratum+tcp://au.vipor.net:5040",
       "timeout": 160,
-      "disabled": 1
+      "disabled": 0
     }
   ],
   "user": "$user",
@@ -189,7 +190,10 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "retry-pause": 10
+  "cpu-affinity": -1,
+  "retry-pause": 10,
+  "api-allow": "192.168.0.0/16",
+  "api-bind": "0.0.0.0:4068"
 }
 EOF
 
@@ -313,7 +317,10 @@ cat <<EOF > ~/ccminer/config.json
   "algo": "verus",
   "threads": $threads,
   "cpu-priority": 1,
-  "retry-pause": 10
+  "cpu-affinity": -1,
+  "retry-pause": 10,
+  "api-allow": "192.168.0.0/16",
+  "api-bind": "0.0.0.0:4068"
 }
 EOF
 #auto create stater  ccminer
