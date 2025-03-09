@@ -101,7 +101,12 @@ else
 	echo "Downloading latest release: $GITHUB_DOWNLOAD_NAME"
 
 	wget ${GITHUB_DOWNLOAD_URL} -P ~/ccminer
+ 	if [ -f ~/ccminer/ccminer ]; then
+  		mv ~/ccminer/ccminer ~/ccminer/ccminer_old
+	fi
+ 	mv ~/ccminer/${GITHUB_DOWNLOAD_NAME} ~/ccminer/ccminer
 fi
+	chmod +x ~/ccminer/ccminer
 	if [ -f ~/ccminer/config.json ]; then
   		INPUT=
   		COUNTER=0
@@ -123,14 +128,10 @@ fi
 	fi
 	wget https://raw.githubusercontent.com/Oink70/Android-Mining/main/config.json -P ~/ccminer
 
-	if [ -f ~/ccminer/ccminer ]; then
-  		mv ~/ccminer/ccminer ~/ccminer/ccminer_old
-	fi
+
 	if [ -f ~/ccminer/config.json ]; then
 		mv ~/ccminer/config.json ~/ccminer/config_old.json
 	fi
-	mv ~/ccminer/${GITHUB_DOWNLOAD_NAME} ~/ccminer/ccminer
-	chmod +x ~/ccminer/ccminer
 
     echo "######################################################"
     echo "   Welcome to script installer ccminer lastest release"
