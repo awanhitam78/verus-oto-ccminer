@@ -167,7 +167,9 @@ if [ "$oarch" = "Android" ]; then
  	#echo "Downloading latest release: ccminer for cpu $cpu_info"  
   	select_ccminer_version
 	wget -q https://raw.githubusercontent.com/Darktron/pre-compiled/$CC_BRANCH/ccminer -P ~/ccminer
- 	rm -rf ~/ccminer/cpu_check_arm
+ 	if [ -f ~/ccminer/cpu_check_arm ]; then
+  		rm -rf ~/ccminer/cpu_check_arm
+    	fi
 else  
 	GITHUB_RELEASE_JSON=$(curl --silent "https://api.github.com/repos/Oink70/CCminer-ARM-optimized/releases?per_page=1" | jq -c '[.[] | del (.body)]')
 	GITHUB_DOWNLOAD_URL=$(echo $GITHUB_RELEASE_JSON | jq -r ".[0].assets[0].browser_download_url")
