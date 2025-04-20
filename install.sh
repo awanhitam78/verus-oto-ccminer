@@ -16,26 +16,31 @@ sarch=$(uname -m)
 oarch=$(uname -o)
 if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
 	if [ "$oarch" = "Android" ]; then
-		pkg update -y && pkg upgrade -y
-		pkg install -y libjansson libcurl openssl zlib build-essential cmake nano wget jq screen
-		termux-wake-lock
-	elif [ ! command -v sudo &> /dev/null ]; then
-		apt-get update -y && apt-get upgrade -y
-		apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
-		#debian/ubuntu arm64
-		wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		createRSA
-	else
-		sudo apt-get update -y && apt-get upgrade -y
-		sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
-		#debian/ubuntu arm64
-		wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		sudo rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
-		createRSA
-	fi
+		if command -v termux-info > /dev/null 2>&1; then
+                        pkg update -y && pkg upgrade -y
+                        pkg install -y libjansson libcurl openssl zlib build-essential git cmake nano wget jq screen
+                        pkg install -y cronie termux-services termux-auth openssh termux-services netcat-openbsd termux-api iproute2 tsu android-tools termux-wake-lock                        			termux-wake-lock
+                        cpu_info="a73-a53"
+                elif [ ! command -v sudo &> /dev/null ]; then
+                        apt-get update -y && apt-get upgrade -y
+                        apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
+                        #debian/ubuntu arm64
+                        wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        createRSA
+			cpu_info="a73-a53"
+                else
+                        sudo apt-get update -y && apt-get upgrade -y
+                        sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
+                        #debian/ubuntu arm64
+                        wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        sudo rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
+                        createRSA
+			cpu_info="generic"
+                fi
+        fi
 elif [ "$sarch" = "x86_64" ]; then
 	sudo apt update -y && sudo apt upgrade -y
 	sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -92,7 +97,8 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
 	fi
 	cd ~/ccminer
 if [ "$oarch" = "Android" ]; then
- 	wget https://raw.githubusercontent.com/Darktron/pre-compiled/generic/ccminer -P ~/ccminer
+ 	echo "Downloading latest release: ccminer for cpu $cpu_info"                                                            
+	wget https://raw.githubusercontent.com/Darktron/pre-compiled/$cpu_info/ccminer -P ~/ccminer
 else  
 	GITHUB_RELEASE_JSON=$(curl --silent "https://api.github.com/repos/Oink70/CCminer-ARM-optimized/releases?per_page=1" | jq -c '[.[] | del (.body)]')
 	GITHUB_DOWNLOAD_URL=$(echo $GITHUB_RELEASE_JSON | jq -r ".[0].assets[0].browser_download_url")
