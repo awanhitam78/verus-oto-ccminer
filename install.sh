@@ -200,7 +200,7 @@ fi
     	fi
   	done
 	fi
-	wget https://raw.githubusercontent.com/Oink70/Android-Mining/main/config.json -P ~/ccminer
+	wget -q https://raw.githubusercontent.com/Oink70/Android-Mining/main/config.json -P ~/ccminer
 
 
 	if [ -f ~/ccminer/config.json ]; then
