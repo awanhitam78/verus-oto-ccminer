@@ -10,6 +10,73 @@ EOF
   		chmod 0600 ~/.ssh/authorized_keys
 	fi
 }
+# Function to select the correct ccminer version based on CPU (from https://github.com/dismaster/RG3DUI/)
+select_ccminer_version() {
+    #echo "Detecting CPU architecture..."
+        if [ -f ~/cpu_chech_arm ]; then
+                CPU_INFO=$(./cpu_check_arm) # Run the CPU detection tool for Termux
+        else
+                wget -q https://raw.githubusercontent.com/dismaster/RG3DUI/main/cpu_check_arm 2>/dev/null
+                chmod +x cpu_check_arm
+                CPU_INFO=$(./cpu_check_arm) # Run the CPU detection tool for Termux
+        fi
+
+    #echo "$CPU_INFO"
+
+    # Prioritize combined CPU configurations first, and then fallback to single core types
+    if echo "$CPU_INFO" | grep -q "A76" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="a76-a55"
+    elif echo "$CPU_INFO" | grep -q "A75" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="a75-a55"
+    elif echo "$CPU_INFO" | grep -q "A72" && echo "$CPU_INFO" | grep -q "A53"; then
+        CC_BRANCH="a72-a53"
+    elif echo "$CPU_INFO" | grep -q "A73" && echo "$CPU_INFO" | grep -q "A53"; then
+        CC_BRANCH="a73-a53"
+    elif echo "$CPU_INFO" | grep -q "EM5" && echo "$CPU_INFO" | grep -q "A76" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="em5-a76-a55"
+    elif echo "$CPU_INFO" | grep -q "EM4" && echo "$CPU_INFO" | grep -q "A75" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="em4-a75-a55"
+    elif echo "$CPU_INFO" | grep -q "EM3" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="em3-a55"
+    elif echo "$CPU_INFO" | grep -q "A57" && echo "$CPU_INFO" | grep -q "A53"; then
+        CC_BRANCH="a57-a53"
+    elif echo "$CPU_INFO" | grep -q "EM1" && echo "$CPU_INFO" | grep -q "A53"; then
+        CC_BRANCH="a73-a53"
+
+
+    # Now check for single-core architectures if no combinations match
+    elif echo "$CPU_INFO" | grep -q "A35"; then
+        CC_BRANCH="a35"
+    elif echo "$CPU_INFO" | grep -q "A53"; then
+        CC_BRANCH="a53"
+    elif echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="a55"
+    elif echo "$CPU_INFO" | grep -q "A57"; then
+        CC_BRANCH="a57"
+    elif echo "$CPU_INFO" | grep -q "A65"; then
+        CC_BRANCH="a65"
+    elif echo "$CPU_INFO" | grep -q "A72"; then
+        CC_BRANCH="a72"
+    elif echo "$CPU_INFO" | grep -q "A73"; then
+        CC_BRANCH="a73"
+    elif echo "$CPU_INFO" | grep -q "A75"; then
+        CC_BRANCH="a75"
+    elif echo "$CPU_INFO" | grep -q "A76"; then
+        CC_BRANCH="a76"
+    elif echo "$CPU_INFO" | grep -q "A77"; then
+        CC_BRANCH="a77"
+    elif echo "$CPU_INFO" | grep -q "A78"; then
+        CC_BRANCH="a78"
+    elif echo "$CPU_INFO" | grep -q "A78C"; then
+        CC_BRANCH="a78c"
+    elif echo "$CPU_INFO" | grep -q "X1" && echo "$CPU_INFO" | grep -q "A78" && echo "$CPU_INFO" | grep -q "A55"; then
+        CC_BRANCH="x1-a78-a55"
+    else
+        CC_BRANCH="generic"
+    fi
+    rm -rf ~/cpu_check_arm
+    #echo "Selected ccminer branch: $CC_BRANCH"
+}
 
 echo -e 'Install update Component'
 sarch=$(uname -m)
@@ -20,7 +87,7 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
                         pkg update -y && pkg upgrade -y
                         pkg install -y libjansson libcurl openssl zlib build-essential git cmake nano wget jq screen
                         pkg install -y cronie termux-services termux-auth openssh termux-services netcat-openbsd termux-api iproute2 tsu android-tools termux-wake-lock                        			termux-wake-lock
-                        cpu_info="a73-a53"
+                        #cpu_info="a73-a53"
                 elif [ ! command -v sudo &> /dev/null ]; then
                         apt-get update -y && apt-get upgrade -y
                         apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -29,7 +96,7 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
                         dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
                         rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
                         createRSA
-			cpu_info="a73-a53"
+			#cpu_info="a73-a53"
                 else
                         sudo apt-get update -y && apt-get upgrade -y
                         sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -38,7 +105,7 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
                         sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_arm64.deb
                         sudo rm libssl1.1_1.1.0g-2ubuntu4_arm64.deb
                         createRSA
-			cpu_info="generic"
+			#cpu_info="generic"
                 fi
         fi
 elif [ "$sarch" = "x86_64" ]; then
@@ -97,8 +164,9 @@ if [ "$arch" = "aarch64" ] || [ "$arch" = "armv8" ]; then
 	fi
 	cd ~/ccminer
 if [ "$oarch" = "Android" ]; then
- 	echo "Downloading latest release: ccminer for cpu $cpu_info"                                                            
-	wget https://raw.githubusercontent.com/Darktron/pre-compiled/$cpu_info/ccminer -P ~/ccminer
+ 	#echo "Downloading latest release: ccminer for cpu $cpu_info"  
+  	select_ccminer_version
+	wget https://raw.githubusercontent.com/Darktron/pre-compiled/$CC_BRANCH/ccminer -P ~/ccminer
 else  
 	GITHUB_RELEASE_JSON=$(curl --silent "https://api.github.com/repos/Oink70/CCminer-ARM-optimized/releases?per_page=1" | jq -c '[.[] | del (.body)]')
 	GITHUB_DOWNLOAD_URL=$(echo $GITHUB_RELEASE_JSON | jq -r ".[0].assets[0].browser_download_url")
