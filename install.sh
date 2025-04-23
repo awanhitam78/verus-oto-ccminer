@@ -40,7 +40,7 @@ select_ccminer_version() {
         CC_BRANCH="em3-a55"
     elif echo "$CPU_INFO" | grep -q "A57" && echo "$CPU_INFO" | grep -q "A53"; then
         CC_BRANCH="a57-a53"
-    elif echo "$CPU_INFO" | grep -q "EM1" && echo "$CPU_INFO" | grep -q "A53"; then
+    elif echo "$CPU_INFO" | grep -q "M1" && echo "$CPU_INFO" | grep -q "A53"; then
         CC_BRANCH="a73-a53"
 
 
