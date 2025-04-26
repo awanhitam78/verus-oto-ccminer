@@ -82,7 +82,7 @@ echo -e 'Install update Component'
 sarch=$(uname -m)
 oarch=$(uname -o)
 if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
-	if [ "$oarch" = "Android" ]; then
+	#if [ "$oarch" = "Android" ]; then
 		if command -v termux-info > /dev/null 2>&1; then
                         pkg update -y && pkg upgrade -y
                         pkg install -y libjansson libcurl openssl zlib build-essential git cmake nano wget jq screen
@@ -107,7 +107,7 @@ if [ "$sarch" = "aarch64" ] || [ "$sarch" = "armv8" ]; then
                         createRSA
 			#cpu_info="generic"
                 fi
-        fi
+        #fi
 elif [ "$sarch" = "x86_64" ]; then
 	sudo apt update -y && sudo apt upgrade -y
 	sudo apt-get -y install libcurl4-openssl-dev libjansson-dev libomp-dev git screen nano jq wget
@@ -129,8 +129,6 @@ else
     echo "Unknown architecture: $sarch"
     exit 1
 fi
-
-make distclean
 
 echo -e 'Checking device compatibility\n'
 arch=$(uname -m)
@@ -187,10 +185,9 @@ fi
 	if [ -f ~/ccminer/config.json ]; then
   		INPUT=
   		COUNTER=0
-  	while [ "$INPUT" != "y" ] && [ "$INPUT" != "n" ] && [ "$COUNTER" <= "10" ]
-  	do
-    		printf '"~/ccminer/config.json" already exists. Do you want to overwrite? (y/n) '
-    	read INPUT
+  	while [ "$INPUT" != "y" ] && [ "$INPUT" != "n" ] && [ "$COUNTER" <= "10" ] do
+    		read -p '"~/ccminer/config.json" already exists. Do you want to overwrite? (y/n) ' INPUT
+    	#read INPUT
     	if [ "$INPUT" = "y" ]; then
       		echo "\noverwriting current \"~/ccminer/config.json\"\n"
       		rm -r ~/ccminer/config.json
