@@ -183,29 +183,37 @@ else
 fi
 	chmod +x ~/ccminer/ccminer
 	if [ -f ~/ccminer/config.json ]; then
-  		INPUT=
-  		COUNTER=0
-  	while [ "$INPUT" != "y" ] && [ "$INPUT" != "n" ] && [ "$COUNTER" <= "10" ] do
-    		read -p '"~/ccminer/config.json" already exists. Do you want to overwrite? (y/n) ' INPUT
-    	#read INPUT
-    	if [ "$INPUT" = "y" ]; then
-      		echo "\noverwriting current \"~/ccminer/config.json\"\n"
-      		rm -r ~/ccminer/config.json
-    	elif [ "$INPUT" = "n" ] && [ "$COUNTER" = "10" ]
-    	then
-      		echo "saving as \"~/ccminer/config.json.#\""
-    	else
-      		echo 'Invalid input. Please answer with "y" or "n".\n'
-      		((COUNTER++))
-    	fi
-  	done
-	fi
-	wget -q https://raw.githubusercontent.com/Oink70/Android-Mining/main/config.json -P ~/ccminer
-
-
-	if [ -f ~/ccminer/config.json ]; then
-		mv ~/ccminer/config.json ~/ccminer/config_old.json
-	fi
+		INPUT=""
+		COUNTER=0
+		while [[ "$INPUT" != "y" && "$INPUT" != "n" && "$COUNTER" -le 10 ]]; do
+		    read -p "~/ccminer/config.json already exists. Do you want to overwrite? (y/n): " INPUT
+		    case "$INPUT" in
+		        [yY][eE][sS]|[yY])
+		            echo "\nOverwriting current \"~/ccminer/config.json\"\n"
+		            rm -f ~/ccminer/config.json
+		            echo "Log: ~/ccminer/config.json overwritten" >> ~/ccminer/process.log
+		        ;;
+		        [nN][oO]|[nN])
+		            echo "Saving as \"~/ccminer/config.json.#\""
+		            echo "Log: ~/ccminer/config.json saved as backup" >> ~/ccminer/process.log
+		        ;;
+		        *)
+		            echo "Invalid input. Please answer with 'y' or 'n'.\n"
+		            ((COUNTER++))
+		        ;;
+		    esac
+		done
+		
+		if [[ "$COUNTER" -gt 10 ]]; then
+		    echo "Maximum attempts reached. Exiting the process."
+		    rm -f ~/ccminer/config.json
+		fi
+			#wget -q https://raw.githubusercontent.com/Oink70/Android-Mining/main/config.json -P ~/ccminer
+		
+		
+			#if [ -f ~/ccminer/config.json ]; then
+			#	mv ~/ccminer/config.json ~/ccminer/config_old.json
+ 	fi
 
     echo "######################################################"
     echo "   Welcome to script installer ccminer lastest release"
