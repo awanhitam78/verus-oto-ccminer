@@ -246,7 +246,7 @@ fi
     user=$wallet.$worker
 
 cat <<EOF > ~/ccminer/run
-./ccminer -a verus -o stratum+tcp://ap.luckpool.net:3957 -u  $user -p d=6 -t $threads
+./ccminer -a verus -o stratum+tcp://au.vipor.net:5040 -u  $user -p x -t $threads
 EOF
 chmod +x ~/ccminer/run
 
@@ -372,7 +372,7 @@ current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
     user=$wallet.$worker
 
 cat <<EOF > ~/ccminer/run
-./ccminer -a verus -o stratum+tcp://ap.luckpool.net:3957 -u  $user -p d=6 -t $threads
+./ccminer -a verus -o stratum+tcp://au.vipor.net:5040 -u  $user -p x -t $threads
 EOF
 chmod +x ~/ccminer/run
 
@@ -383,14 +383,14 @@ cat <<EOF > ~/ccminer/config.json
 {
   "pools": [
     {
-      "name": "LUCKPOOL 1",
+      "name": "LUCKPOOL",
       "url": "stratum+tcp://ap.luckpool.net:3956",
       "timeout": 180,
-      "disabled": 0
+      "disabled": 1
     },
     {
-      "name": "LUCKPOOL 2",
-      "url": "stratum+tcp://na.luckpool.net:3956",
+      "name": "VIPOR",
+      "url": "stratum+tcp://au.vipor.net:5040",
       "timeout": 160,
       "disabled": 0
     }
